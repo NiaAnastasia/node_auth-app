@@ -106,7 +106,10 @@ const activateAccount = async (req, res) => {
     user.activationToken = null;
     await user.save();
 
-    return res.render('auth/activation', { success: true });
+    // Автологин после активации
+    req.session.userId = user._id;
+
+    return res.redirect('/profile');
   } catch (error) {
     return res.render('auth/activation', { success: false });
   }
@@ -314,7 +317,7 @@ const updatePassword = async (req, res) => {
 };
 
 const updateEmail = async (req, res) => {
-  const { password, newEmail } = req.body;
+  const { password, newEmail, newEmailConfirmation } = req.body;
   const user = await User.findById(req.session.userId);
   const isMatch = await bcrypt.compare(password, user.password);
 
@@ -322,6 +325,14 @@ const updateEmail = async (req, res) => {
     return res.render('profile/index', {
       user,
       errors: [{ msg: 'Password is incorrect' }],
+      success: null,
+    });
+  }
+
+  if (newEmail !== newEmailConfirmation) {
+    return res.render('profile/index', {
+      user,
+      errors: [{ msg: 'Emails do not match' }],
       success: null,
     });
   }

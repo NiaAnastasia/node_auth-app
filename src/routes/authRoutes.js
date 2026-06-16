@@ -20,8 +20,8 @@ router.post('/logout', isAuth, authController.logout);
 // Reset Password
 router.get('/reset-password', isGuest, authController.getResetPassword);
 router.post('/reset-password', isGuest, authController.postResetPassword);
-router.get('/reset-password/:token', authController.getNewPassword);
-router.post('/reset-password/:token', authController.postNewPassword);
+router.get('/reset-password/:token', isGuest, authController.getNewPassword);
+router.post('/reset-password/:token', isGuest, authController.postNewPassword);
 
 // Profile
 router.get('/profile', isAuth, authController.getProfile);
